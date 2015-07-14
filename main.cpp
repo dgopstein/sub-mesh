@@ -2,8 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <iostream>
+
 // Include GLEW
 #include <GL/glew.h>
+//#include <OpenGL/gl3.h>
+//#include <OpenGL/gl3ext.h>
 
 // Include GLFW
 #include <glfw3.h>
@@ -14,9 +18,9 @@ GLFWwindow* window;
 #include <glm/gtc/matrix_transform.hpp>
 using namespace glm;
 
-#include <common/shader.hpp>
-#include <common/texture.hpp>
-#include <common/controls.hpp>
+#include "common/shader.hpp"
+#include "common/texture.hpp"
+#include "common/controls.hpp"
 
 int main( void )
 {
@@ -27,9 +31,11 @@ int main( void )
                 return -1;
         }
 
+
         glfwWindowHint(GLFW_SAMPLES, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
         // Open a window and create its OpenGL context

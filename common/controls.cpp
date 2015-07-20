@@ -79,20 +79,33 @@ void computeMatricesFromInputs(){
 	// Up vector
 	glm::vec3 up = glm::cross( right, direction );
 
+  // Only rotate if the mouse button is pressed
+  if (glfwGetMouseButton( window, GLFW_MOUSE_BUTTON_1 ) == GLFW_PRESS) {
+      mouseSpeed = 0.00005f;
+  } else {
+      mouseSpeed = 0.0;
+  }
+
 	// Move forward
-	if (glfwGetKey( window, GLFW_KEY_UP ) == GLFW_PRESS){
-		position += direction * deltaTime * speed;
+	if (glfwGetKey( window, GLFW_KEY_UP ) == GLFW_PRESS ||
+      glfwGetKey( window, GLFW_KEY_W  ) == GLFW_PRESS ){
+		//position += direction * deltaTime * speed;
+		position += up * deltaTime * speed;
 	}
 	// Move backward
-	if (glfwGetKey( window, GLFW_KEY_DOWN ) == GLFW_PRESS){
-		position -= direction * deltaTime * speed;
+	if (glfwGetKey( window, GLFW_KEY_DOWN ) == GLFW_PRESS ||
+      glfwGetKey( window, GLFW_KEY_S    ) == GLFW_PRESS ){
+		//position -= direction * deltaTime * speed;
+		position -= up * deltaTime * speed;
 	}
 	// Strafe right
-	if (glfwGetKey( window, GLFW_KEY_RIGHT ) == GLFW_PRESS){
+	if (glfwGetKey( window, GLFW_KEY_RIGHT ) == GLFW_PRESS ||
+      glfwGetKey( window, GLFW_KEY_D     ) == GLFW_PRESS ){
 		position += right * deltaTime * speed;
 	}
 	// Strafe left
-	if (glfwGetKey( window, GLFW_KEY_LEFT ) == GLFW_PRESS){
+	if (glfwGetKey( window, GLFW_KEY_LEFT ) == GLFW_PRESS ||
+      glfwGetKey( window, GLFW_KEY_A    ) == GLFW_PRESS ){
 		position -= right * deltaTime * speed;
 	}
 

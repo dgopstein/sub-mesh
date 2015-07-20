@@ -30,6 +30,8 @@ include (ACGCommon)
 # collect all header and source files
 acg_append_files (headers "*.hh" .)
 acg_append_files (sources "*.cc" .)
+acg_append_files (headers "*.h" .)
+acg_append_files (sources "*.cpp" .)
 
 ### Build sub_mesh
 

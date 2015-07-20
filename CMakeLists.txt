@@ -2,47 +2,52 @@ INCLUDE (ExternalProject)
 
 cmake_minimum_required (VERSION 2.6)
 project (sub_mesh)
+set (targetName sub_mesh)
 
+message("\nPROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}\n")
+
+### GLFW
 
 SET(GLFW_PATH $ENV{HOME}/opt/lib/glfw-3.1.1 glfw-dir)
 add_subdirectory(${GLFW_PATH})
-#include_directories(${CMAKE_SOURCE_DIR}/glfw-3.1.1/include)
 include_directories(
   external/glfw-3.1.1/include/GLFW/
   external/glm/
 )
 
+### OpenMesh
+
+include_directories ( ${PROJECT_SOURCE_DIR}/external/OpenMesh-3.3/cmake/) # Not necessary?
+  
+add_subdirectory(${PROJECT_SOURCE_DIR}/external/OpenMesh-3.3) # This line builds OpenMesh
+
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/external/OpenMesh-3.3/cmake/)
+
+include (ACGCommon)
+#include (external/OpenMesh-3.3/cmake/ACGCommon.cmake)
+
+# collect all header and source files
+acg_append_files (headers "*.hh" .)
+acg_append_files (sources "*.cc" .)
+
+### Build sub_mesh
+
+#acg_add_executable (${targetName} ${headers} ${sources})
 FILE(GLOB CommonSource common/*.cpp)
+acg_add_executable (${targetName} main.cpp ${CommonSource})
 
-add_executable(sub_mesh main.cpp ${CommonSource})
+### Link libraries
 
-#set(ALL_LIBS
-#  ${OPENGL_LIBRARY}
-#  GLFW_311
-#  GLEW_190
-#)
+target_link_libraries(${targetName} OpenMeshCore OpenMeshTools)
+target_link_libraries(${targetName} glfw ${GLFW_LIBRARIES})
+target_link_libraries(${targetName} glew ${GLEW_LIBRARIES})
 
-target_link_libraries(sub_mesh glfw ${GLFW_LIBRARIES})
-target_link_libraries(sub_mesh glew ${GLEW_LIBRARIES})
-#target_link_libraries(sub_mesh glfw ${OPENGL_glu_LIBRARY} ${GLFW_LIBRARIES})
+install(TARGETS ${targetName} DESTINATION bin)
 
-#SET (SUBDIRS extern)
-#FOREACH (sbdir ${SUBDIRS})
-#    ADD_SUBDIRECTORY (${sbdir})
-#ENDFOREACH (sbdir)
+### Move shaders to output dir
 
-
-#ExternalProject_Add(project_glfw
-#  URL https://github.com/glfw/glfw/archive/3.1.1.tar.gz
-#  PREFIX ${CMAKE_CURRENT_BINARY_DIR}/glfw-3.1.1
-#)
-
-#include_directories(glfw-3.1.1/src/project_glfw/include/)
-#find_package(glfw REQUIRED)
-
-#set_property(TARGET glfw PROPERTY IMPORTED_LOCATION ${install_dir}/lib/libluajit-5.1.a)
-#add_dependencies(glfw project_glfw)
-#add_library(project_glfw STATIC IMPORTED)
-
-
-install(TARGETS sub_mesh DESTINATION bin)
+file(GLOB VERTEX_SHADERS "shaders/*.vert")
+file(GLOB FRAGMENT_SHADERS "shaders/*.frag")
+file(COPY ${VERTEX_SHADERS} DESTINATION .)
+file(COPY ${FRAGMENT_SHADERS} DESTINATION .)

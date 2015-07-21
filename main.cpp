@@ -99,12 +99,53 @@ static const GLfloat unit_cube_vertices[] = {
          1.0f,-1.0f, 1.0f
 };
 
+
+static const GLfloat unit_cube_normals[] = { 
+        -1.0f,-1.0f,-1.0f,
+        -1.0f,-1.0f, 1.0f,
+        -1.0f, 1.0f, 1.0f,
+         1.0f, 1.0f,-1.0f,
+        -1.0f,-1.0f,-1.0f,
+        -1.0f, 1.0f,-1.0f,
+         1.0f,-1.0f, 1.0f,
+        -1.0f,-1.0f,-1.0f,
+         1.0f,-1.0f,-1.0f,
+         1.0f, 1.0f,-1.0f,
+         1.0f,-1.0f,-1.0f,
+        -1.0f,-1.0f,-1.0f,
+        -1.0f,-1.0f,-1.0f,
+        -1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f,-1.0f,
+         1.0f,-1.0f, 1.0f,
+        -1.0f,-1.0f, 1.0f,
+        -1.0f,-1.0f,-1.0f,
+        -1.0f, 1.0f, 1.0f,
+        -1.0f,-1.0f, 1.0f,
+         1.0f,-1.0f, 1.0f,
+         1.0f, 1.0f, 1.0f,
+         1.0f,-1.0f,-1.0f,
+         1.0f, 1.0f,-1.0f,
+         1.0f,-1.0f,-1.0f,
+         1.0f, 1.0f, 1.0f,
+         1.0f,-1.0f, 1.0f,
+         1.0f, 1.0f, 1.0f,
+         1.0f, 1.0f,-1.0f,
+        -1.0f, 1.0f,-1.0f,
+         1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f,-1.0f,
+        -1.0f, 1.0f, 1.0f,
+         1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f, 1.0f,
+         1.0f,-1.0f, 1.0f
+};
+
 int n_vertices = sizeof(unit_cube_vertices)/sizeof(unit_cube_vertices[0]);
 
 int main( void )
 {
 
     TriMesh mesh = verts_to_trimesh(unit_cube_vertices, n_vertices);
+    std::vector<double> normals = mesh_normals(mesh);
 
     window = init_glfw_window();
 
@@ -128,16 +169,24 @@ int main( void )
     glBindVertexArray(VertexArrayID);
 
     // Create and compile our GLSL program from the shaders
-    GLuint programID = LoadShaders( "TransformVertexShader.vert", "TextureFragmentShader.frag" );
-    //GLuint programID = LoadShaders( "phong.vert", "phong.frag" );
+    //GLuint programID = LoadShaders( "TransformVertexShader.vert", "TextureFragmentShader.frag" );
+    GLuint programID = LoadShaders( "phong.vert", "phong.frag" );
 
     // Get a handle for our "MVP" uniform
-    GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+    GLuint MVP_ID    = glGetUniformLocation(programID, "MVP");
+    GLuint MV_ID     = glGetUniformLocation(programID, "MV");
+    GLuint NORMAT_ID = glGetUniformLocation(programID, "normalMatrix");
+    GLuint LIGHT_ID  = glGetUniformLocation(programID, "vLightPosition");
     
     GLuint vertexbuffer;
     glGenBuffers(1, &vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(unit_cube_vertices), unit_cube_vertices, GL_STATIC_DRAW);
+
+    GLuint NormalVBOID;
+    glGenBuffers(1, &NormalVBOID);
+    glBindBuffer(GL_ARRAY_BUFFER, NormalVBOID);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(unit_cube_normals), &unit_cube_normals[0], GL_DYNAMIC_DRAW);
 
     do{
 
@@ -152,11 +201,17 @@ int main( void )
             glm::mat4 ProjectionMatrix = getProjectionMatrix();
             glm::mat4 ViewMatrix = getViewMatrix();
             glm::mat4 ModelMatrix = glm::mat4(1.0);
+            glm::mat4 MV  = ViewMatrix * ModelMatrix;
             glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+            glm::mat4 NorMat = glm::inverse(glm::transpose(MV));
+            glm::vec3 Light = glm::vec3(1.0, 0.5, -1.0);
 
             // Send our transformation to the currently bound shader, 
             // in the "MVP" uniform
-            glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+            glUniformMatrix4fv(MVP_ID,    1, GL_FALSE, &MVP[0][0]);
+            glUniformMatrix4fv(MV_ID,     1, GL_FALSE, &MV[0][0]);
+            glUniformMatrix4fv(NORMAT_ID, 1, GL_FALSE, &NorMat[0][0]);
+            glUniform3fv(LIGHT_ID, 1, &Light[0]);
 
             // 1rst attribute buffer : vertices
             glEnableVertexAttribArray(0);
@@ -170,16 +225,9 @@ int main( void )
                     (void*)0            // array buffer offset
             );
 
-            // 2nd attribute buffer : UVs
             glEnableVertexAttribArray(1);
-            glVertexAttribPointer(
-                    1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-                    2,                                // size : U+V => 2
-                    GL_FLOAT,                         // type
-                    GL_FALSE,                         // normalized?
-                    0,                                // stride
-                    (void*)0                          // array buffer offset
-            );
+            glBindBuffer(GL_ARRAY_BUFFER, NormalVBOID);
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
             // Draw the triangle !
             glDrawArrays(GL_TRIANGLES, 0, 12*3); // 12*3 indices starting at 0 -> 12 triangles

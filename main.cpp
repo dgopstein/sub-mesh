@@ -99,45 +99,44 @@ static const GLfloat unit_cube_vertices[] = {
          1.0f,-1.0f, 1.0f
 };
 
-
-static const GLfloat unit_cube_normals[] = { 
-        -1.0f,-1.0f,-1.0f,
-        -1.0f,-1.0f, 1.0f,
-        -1.0f, 1.0f, 1.0f,
-         1.0f, 1.0f,-1.0f,
-        -1.0f,-1.0f,-1.0f,
-        -1.0f, 1.0f,-1.0f,
-         1.0f,-1.0f, 1.0f,
-        -1.0f,-1.0f,-1.0f,
-         1.0f,-1.0f,-1.0f,
-         1.0f, 1.0f,-1.0f,
-         1.0f,-1.0f,-1.0f,
-        -1.0f,-1.0f,-1.0f,
-        -1.0f,-1.0f,-1.0f,
-        -1.0f, 1.0f, 1.0f,
-        -1.0f, 1.0f,-1.0f,
-         1.0f,-1.0f, 1.0f,
-        -1.0f,-1.0f, 1.0f,
-        -1.0f,-1.0f,-1.0f,
-        -1.0f, 1.0f, 1.0f,
-        -1.0f,-1.0f, 1.0f,
-         1.0f,-1.0f, 1.0f,
-         1.0f, 1.0f, 1.0f,
-         1.0f,-1.0f,-1.0f,
-         1.0f, 1.0f,-1.0f,
-         1.0f,-1.0f,-1.0f,
-         1.0f, 1.0f, 1.0f,
-         1.0f,-1.0f, 1.0f,
-         1.0f, 1.0f, 1.0f,
-         1.0f, 1.0f,-1.0f,
-        -1.0f, 1.0f,-1.0f,
-         1.0f, 1.0f, 1.0f,
-        -1.0f, 1.0f,-1.0f,
-        -1.0f, 1.0f, 1.0f,
-         1.0f, 1.0f, 1.0f,
-        -1.0f, 1.0f, 1.0f,
-         1.0f,-1.0f, 1.0f
-};
+//static const GLfloat unit_cube_normals[] = { 
+//    -1.0f, 0.0f, 0.0f,
+//    -1.0f, 0.0f, 0.0f,
+//    -1.0f, 0.0f, 0.0f,
+//    0.0f, 0.0f, -1.0f,
+//    0.0f, 0.0f, -1.0f,
+//    0.0f, 0.0f, -1.0f,
+//    0.0f, -1.0f, 0.0f,
+//    0.0f, -1.0f, 0.0f,
+//    0.0f, -1.0f, 0.0f,
+//    0.0f, 0.0f, -1.0f,
+//    0.0f, 0.0f, -1.0f,
+//    0.0f, 0.0f, -1.0f,
+//    -1.0f, 0.0f, 0.0f,
+//    -1.0f, 0.0f, 0.0f,
+//    -1.0f, 0.0f, 0.0f,
+//    0.0f, -1.0f, 0.0f,
+//    0.0f, -1.0f, 0.0f,
+//    0.0f, -1.0f, 0.0f,
+//    0.0f, 0.0f, 1.0f,
+//    0.0f, 0.0f, 1.0f,
+//    0.0f, 0.0f, 1.0f,
+//    1.0f, 0.0f, 0.0f,
+//    1.0f, 0.0f, 0.0f,
+//    1.0f, 0.0f, 0.0f,
+//    1.0f, 0.0f, 0.0f,
+//    1.0f, 0.0f, 0.0f,
+//    1.0f, 0.0f, 0.0f,
+//    0.0f, 1.0f, 0.0f,
+//    0.0f, 1.0f, 0.0f,
+//    0.0f, 1.0f, 0.0f,
+//    0.0f, 1.0f, 0.0f,
+//    0.0f, 1.0f, 0.0f,
+//    0.0f, 1.0f, 0.0f,
+//    0.0f, 0.0f, 1.0f,
+//    0.0f, 0.0f, 1.0f,
+//    0.0f, 0.0f, 1.0f,
+//};
 
 int n_vertices = sizeof(unit_cube_vertices)/sizeof(unit_cube_vertices[0]);
 
@@ -146,6 +145,14 @@ int main( void )
 
     TriMesh mesh = verts_to_trimesh(unit_cube_vertices, n_vertices);
     std::vector<double> normals = mesh_normals(mesh);
+
+    // copy vertices to normals for debugging
+    //for (int i = 0; i < sizeof(unit_cube_vertices) / sizeof(unit_cube_vertices[0]); i++) {
+    ////    std::cout << i << ": " << unit_cube_vertices[i] << std::endl;
+    //    normals[i] = unit_cube_vertices[i];
+    //}
+
+    print_normals(normals);
 
     window = init_glfw_window();
 
@@ -183,10 +190,11 @@ int main( void )
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(unit_cube_vertices), unit_cube_vertices, GL_STATIC_DRAW);
 
+    
     GLuint NormalVBOID;
     glGenBuffers(1, &NormalVBOID);
     glBindBuffer(GL_ARRAY_BUFFER, NormalVBOID);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(unit_cube_normals), &unit_cube_normals[0], GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(double) * normals.size(), &normals[0], GL_DYNAMIC_DRAW);
 
     do{
 

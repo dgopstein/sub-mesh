@@ -5,6 +5,7 @@
 #include <OpenMesh/Core/IO/Options.hh>
 #include <OpenMesh/Core/Mesh/TriMesh_ArrayKernelT.hh>
 #include <OpenMesh/Core/Geometry/VectorT.hh>
+//#include <deque>
 
 struct TriMeshTraits : public OpenMesh::DefaultTraits
 {
@@ -37,17 +38,30 @@ TriMesh verts_to_trimesh(const GLfloat verts_arr[], int asize) {
         vhandles.push_back(vhandle);
     }
     
-    std::vector<TriMesh::VertexHandle> face_vhandles;
+    std::vector<TriMesh::VertexHandle> face_vhandles(3);
     for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); ) {
-        face_vhandles.clear();
-        // std::cout << "vhandle: " << v_it << "/" << vhandles.size() << std::endl;
-        face_vhandles.push_back(*v_it++);
-        face_vhandles.push_back(*v_it++);
-        face_vhandles.push_back(*v_it++);
+        //std::cout << "face: " << v_it << "/" << vhandles.size() << std::endl;
+        //face_vhandles[2] = *v_it++;
+        //face_vhandles[1] = *v_it++;
+        //face_vhandles[0] = *v_it++;
+        face_vhandles[0] = *v_it++;
+        face_vhandles[1] = *v_it++;
+        face_vhandles[2] = *v_it++;
         mesh.add_face(face_vhandles);
     }
 
     return mesh;
+}
+
+
+void print_normals(std::vector<double> normals) {
+  // print the normals
+  for (size_t i = 0; i < normals.size(); i += 3) {
+
+    std::cout << "Normal #" << i / 3 << ": " << normals[i]
+                                     << ", " << normals[i+1]
+                                     << ", " << normals[i+2] << std::endl;
+  }
 }
 
 std::vector<double> mesh_normals(TriMesh mesh) {
@@ -55,11 +69,10 @@ std::vector<double> mesh_normals(TriMesh mesh) {
   mesh.request_face_normals();
   mesh.update_normals();
 
-  std::vector<double> normals;
+  std::vector<double> normals(mesh.n_vertices());
 
-  for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); ++v_it) {
+  for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); v_it++) {
     TriMesh::Normal normal = mesh.normal(*v_it);
-    // std::cout << "Vertex Normal #" << *v_it << ": (" << mesh.point(*v_it) << ") " << normal << std::endl;
     normals.push_back(normal[0]);
     normals.push_back(normal[1]);
     normals.push_back(normal[2]);

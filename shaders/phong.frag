@@ -21,5 +21,5 @@ void main(void) {
  float spec = max(0.0, dot(normalize(vVaryingNormal), vReflection));
 
  float fSpec = pow(spec, 128.0);
- vFragColor.rgb += vec3(fSpec, fSpec, fSpec);
+ //vFragColor.rgb += vec3(fSpec, fSpec, fSpec);
 }

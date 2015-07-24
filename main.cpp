@@ -94,8 +94,10 @@ static const int triangle_indices[] = {
    0, 1, 2,
 };
 
-#define _shape_vertices triangle_vertices
-#define _shape_indices triangle_indices
+//#define _shape_vertices triangle_vertices
+//#define _shape_indices triangle_indices
+#define _shape_vertices unit_cube_vertices
+#define _shape_indices unit_cube_indices
 
 int n_vertices = sizeof(_shape_vertices)/sizeof(_shape_vertices[0]);
 int n_indices = sizeof(_shape_indices)/sizeof(_shape_indices[0]);

@@ -58,74 +58,6 @@ GLFWwindow* init_glfw_window(int width = 1024, int height = 768, std::string tit
     return win;
 }
 
-// Our vertices. Tree consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
-// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
-//static const GLfloat unit_cube_vertices[] = { 
-//        -1.0f,-1.0f,-1.0f,
-//        -1.0f,-1.0f, 1.0f,
-//        -1.0f, 1.0f, 1.0f,
-//         1.0f, 1.0f,-1.0f,
-//        -1.0f,-1.0f,-1.0f,
-//        -1.0f, 1.0f,-1.0f,
-//         1.0f,-1.0f, 1.0f,
-//        -1.0f,-1.0f,-1.0f,
-//         1.0f,-1.0f,-1.0f,
-//         1.0f, 1.0f,-1.0f,
-//         1.0f,-1.0f,-1.0f,
-//        -1.0f,-1.0f,-1.0f,
-//        -1.0f,-1.0f,-1.0f,
-//        -1.0f, 1.0f, 1.0f,
-//        -1.0f, 1.0f,-1.0f,
-//         1.0f,-1.0f, 1.0f,
-//        -1.0f,-1.0f, 1.0f,
-//        -1.0f,-1.0f,-1.0f,
-//        -1.0f, 1.0f, 1.0f,
-//        -1.0f,-1.0f, 1.0f,
-//         1.0f,-1.0f, 1.0f,
-//         1.0f, 1.0f, 1.0f,
-//         1.0f,-1.0f,-1.0f,
-//         1.0f, 1.0f,-1.0f,
-//         1.0f,-1.0f,-1.0f,
-//         1.0f, 1.0f, 1.0f,
-//         1.0f,-1.0f, 1.0f,
-//         1.0f, 1.0f, 1.0f,
-//         1.0f, 1.0f,-1.0f,
-//        -1.0f, 1.0f,-1.0f,
-//         1.0f, 1.0f, 1.0f,
-//        -1.0f, 1.0f,-1.0f,
-//        -1.0f, 1.0f, 1.0f,
-//         1.0f, 1.0f, 1.0f,
-//        -1.0f, 1.0f, 1.0f,
-//         1.0f,-1.0f, 1.0f
-//};
-
-//static const int unit_cube_indices[] = { 
-//        0, 1, 3,
-//        6, 0, 2,
-//        5, 0, 4,
-//        6, 4, 0,
-//        0, 3, 2,
-//        5, 1, 0,
-//        3, 1, 5,
-//        7, 4, 6,
-//        4, 7, 5,
-//        7, 6, 2,
-//        7, 2, 3,
-//        7, 3, 5
-//};
-//
-//static const GLfloat unit_cube_vertices[] = { 
-//        -1.0f, -1.0f, -1.0f,
-//        -1.0f, -1.0f,  1.0f,
-//        -1.0f,  1.0f, -1.0f,
-//        -1.0f,  1.0f,  1.0f,
-//         1.0f, -1.0f, -1.0f,
-//         1.0f, -1.0f,  1.0f,
-//         1.0f, -1.0f,  1.0f,
-//         1.0f,  1.0f, -1.0f,
-//         1.0f,  1.0f,  1.0f
-//};
-
 static const int unit_cube_indices[] = {
   0, 1, 2,
   0, 2, 3,
@@ -152,32 +84,28 @@ static const GLfloat unit_cube_vertices[] = {
   -1,  1, -3,
 };
 
-int n_vertices = sizeof(unit_cube_vertices)/sizeof(unit_cube_vertices[0]);
-int n_indices = sizeof(unit_cube_indices)/sizeof(unit_cube_indices[0]);
+static const GLfloat triangle_vertices[] = {
+  -1, -1, -1,
+   1, -1, -1,
+   1,  1, -1,
+};
+
+static const int triangle_indices[] = {
+   0, 1, 2,
+};
+
+#define _shape_vertices triangle_vertices
+#define _shape_indices triangle_indices
+
+int n_vertices = sizeof(_shape_vertices)/sizeof(_shape_vertices[0]);
+int n_indices = sizeof(_shape_indices)/sizeof(_shape_indices[0]);
 
 int main( void )
 {
 
-    TriMesh mesh = verts_to_trimesh(unit_cube_vertices, n_vertices, unit_cube_indices, n_indices);
+    TriMesh mesh = verts_to_trimesh(_shape_vertices, n_vertices, _shape_indices, n_indices);
     std::vector<float> normals = mesh_normals(mesh);
     std::cout << "Normal size: " << normals.size() << std::endl;
-
-    // copy vertices to normals for debugging
-    //int normals_size = sizeof(unit_cube_vertices) / sizeof(unit_cube_vertices[0]);
-    //normals.resize(normals_size);
-    //for (int i = 0; i < normals_size;  i++) {
-    ////    std::cout << i << ": " << unit_cube_vertices[i] << std::endl;
-    //    normals[i] = unit_cube_vertices[i];
-    //}
-    //normals[0] = -1.1f;
-    //normals[1] = -1.1f;
-    //normals[2] = -1.1f;
-    //normals[3] = 0.5f;
-    //normals[4] = 0.4f;
-    //normals[5] = 0.3f;
-    //normals[6] = 0.2f;
-    //normals[7] = 0.1f;
-    //normals[8] = 0.0f;
 
     print_normals(normals);
 
@@ -214,12 +142,12 @@ int main( void )
     GLuint vertexbuffer;
     glGenBuffers(1, &vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(unit_cube_vertices), unit_cube_vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(_shape_vertices), _shape_vertices, GL_STATIC_DRAW);
 
     GLuint elementbuffer;
     glGenBuffers(1, &elementbuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unit_cube_indices), unit_cube_indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(_shape_indices), _shape_indices, GL_STATIC_DRAW);
 
     
     GLuint NormalVBOID;
@@ -244,9 +172,6 @@ int main( void )
             glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
             glm::mat4 NorMat = glm::inverse(glm::transpose(MV));
             //glm::vec3 Light = glm::vec3(1.0, 0.5, -1.0);
-
-            //for (int i = 0; i < 16; 
-            //std::cout << "NORMAT: " << glm::inverse(glm::transpose(MV)) << std::endl;
 
             // Send our transformation to the currently bound shader, 
             // in the "MVP" uniform
@@ -273,7 +198,7 @@ int main( void )
             // Draw the triangles !
             glDrawElements(
                 GL_TRIANGLES,      // mode
-                sizeof(unit_cube_indices) / sizeof(unit_cube_indices[0]),    // count
+                sizeof(_shape_indices) / sizeof(_shape_indices[0]),    // count
                 GL_UNSIGNED_INT,   // type
                 (void*)0           // element array buffer offset
             );

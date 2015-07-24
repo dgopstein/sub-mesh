@@ -160,6 +160,7 @@ int main( void )
 
     TriMesh mesh = verts_to_trimesh(unit_cube_vertices, n_vertices, unit_cube_indices, n_indices);
     std::vector<float> normals = mesh_normals(mesh);
+    std::cout << "Normal size: " << normals.size() << std::endl;
 
     // copy vertices to normals for debugging
     //int normals_size = sizeof(unit_cube_vertices) / sizeof(unit_cube_vertices[0]);

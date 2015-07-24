@@ -45,7 +45,7 @@ TriMesh verts_to_trimesh(const GLfloat verts_arr[], int verts_size, const int in
     std::vector<TriMesh::Point> points;
 
     for (int i = 0; i < verts_size; i += 3) { 
-        std::cout << "Points: " << verts[i + 0] << ", " << verts[i + 1] << ", " << verts[i + 2] << std::endl;
+        //std::cout << "Points: " << verts[i + 0] << ", " << verts[i + 1] << ", " << verts[i + 2] << std::endl;
         TriMesh::Point pt = TriMesh::Point(verts[i + 0], verts[i + 1], verts[i + 2]);
         TriMesh::VertexHandle vhandle = mesh.add_vertex(pt);
         vhandles.push_back(vhandle);
@@ -83,9 +83,13 @@ std::vector<float> mesh_normals(TriMesh mesh) {
   mesh.request_face_normals();
   mesh.update_normals();
 
-  std::vector<float> normals(mesh.n_vertices());
+  std::vector<float> normals;
 
-  for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); v_it++) {
+  TriMesh::VertexIter v_it = mesh.vertices_begin();
+  //v_it++;
+  //v_it++;
+  for (  ; v_it != mesh.vertices_end(); ++v_it) {
+    std::cout << "v_it: " << v_it << std::endl;
     TriMesh::Normal normal = mesh.normal(*v_it);
     normals.push_back((float)normal[0]);
     normals.push_back((float)normal[1]);

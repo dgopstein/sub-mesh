@@ -62,6 +62,20 @@ void computeMatricesFromInputs(){
 	horizontalAngle += mouseSpeed * float(1024/2 - xpos );
 	verticalAngle   += mouseSpeed * float( 768/2 - ypos );
 
+  const float MOUSE_SPEED = 0.005f;
+	if (glfwGetKey( window, GLFW_KEY_UP ) == GLFW_PRESS) {
+	  verticalAngle += MOUSE_SPEED;
+	}
+	if (glfwGetKey( window, GLFW_KEY_DOWN ) == GLFW_PRESS) {
+	  verticalAngle -= MOUSE_SPEED;
+	}
+	if (glfwGetKey( window, GLFW_KEY_LEFT ) == GLFW_PRESS) {
+	  horizontalAngle += MOUSE_SPEED;
+	}
+	if (glfwGetKey( window, GLFW_KEY_RIGHT ) == GLFW_PRESS) {
+	  horizontalAngle -= MOUSE_SPEED;
+	}
+
 	// Direction : Spherical coordinates to Cartesian coordinates conversion
 	glm::vec3 direction(
 		cos(verticalAngle) * sin(horizontalAngle), 
@@ -81,30 +95,30 @@ void computeMatricesFromInputs(){
 
   // Only rotate if the mouse button is pressed
   if (glfwGetMouseButton( window, GLFW_MOUSE_BUTTON_1 ) == GLFW_PRESS) {
-      mouseSpeed = 0.00005f;
+      mouseSpeed = MOUSE_SPEED;
   } else {
       mouseSpeed = 0.0;
   }
 
 	// Move forward
-	if (glfwGetKey( window, GLFW_KEY_UP ) == GLFW_PRESS ||
+	if (//glfwGetKey( window, GLFW_KEY_UP ) == GLFW_PRESS ||
       glfwGetKey( window, GLFW_KEY_W  ) == GLFW_PRESS ){
 		//position += direction * deltaTime * speed;
 		position += up * deltaTime * speed;
 	}
 	// Move backward
-	if (glfwGetKey( window, GLFW_KEY_DOWN ) == GLFW_PRESS ||
+	if (//glfwGetKey( window, GLFW_KEY_DOWN ) == GLFW_PRESS ||
       glfwGetKey( window, GLFW_KEY_S    ) == GLFW_PRESS ){
 		//position -= direction * deltaTime * speed;
 		position -= up * deltaTime * speed;
 	}
 	// Strafe right
-	if (glfwGetKey( window, GLFW_KEY_RIGHT ) == GLFW_PRESS ||
+	if (//glfwGetKey( window, GLFW_KEY_RIGHT ) == GLFW_PRESS ||
       glfwGetKey( window, GLFW_KEY_D     ) == GLFW_PRESS ){
 		position += right * deltaTime * speed;
 	}
 	// Strafe left
-	if (glfwGetKey( window, GLFW_KEY_LEFT ) == GLFW_PRESS ||
+	if (//glfwGetKey( window, GLFW_KEY_LEFT ) == GLFW_PRESS ||
       glfwGetKey( window, GLFW_KEY_A    ) == GLFW_PRESS ){
 		position -= right * deltaTime * speed;
 	}

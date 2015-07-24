@@ -153,12 +153,13 @@ static const GLfloat unit_cube_vertices[] = {
 };
 
 int n_vertices = sizeof(unit_cube_vertices)/sizeof(unit_cube_vertices[0]);
+int n_indices = sizeof(unit_cube_indices)/sizeof(unit_cube_indices[0]);
 
 int main( void )
 {
 
-    //TriMesh mesh = verts_to_trimesh(unit_cube_vertices, n_vertices);
-    //std::vector<double> normals = mesh_normals(mesh);
+    TriMesh mesh = verts_to_trimesh(unit_cube_vertices, n_vertices, unit_cube_indices, n_indices);
+    std::vector<float> normals = mesh_normals(mesh);
 
     // copy vertices to normals for debugging
     //int normals_size = sizeof(unit_cube_vertices) / sizeof(unit_cube_vertices[0]);
@@ -177,7 +178,7 @@ int main( void )
     //normals[7] = 0.1f;
     //normals[8] = 0.0f;
 
-    //print_normals(normals);
+    print_normals(normals);
 
     window = init_glfw_window();
 
@@ -194,15 +195,15 @@ int main( void )
     glDepthFunc(GL_LESS); 
 
     // Cull triangles which normal is not towards the camera
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
 
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
     // Create and compile our GLSL program from the shaders
-    GLuint programID = LoadShaders( "TransformVertexShader.vert", "TextureFragmentShader.frag" );
-    //GLuint programID = LoadShaders( "phong.vert", "phong.frag" );
+    //GLuint programID = LoadShaders( "TransformVertexShader.vert", "TextureFragmentShader.frag" );
+    GLuint programID = LoadShaders( "phong.vert", "phong.frag" );
 
     // Get a handle for our "MVP" uniform
     GLuint MVP_ID    = glGetUniformLocation(programID, "MVP");
@@ -221,10 +222,10 @@ int main( void )
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unit_cube_indices), unit_cube_indices, GL_STATIC_DRAW);
 
     
-    //GLuint NormalVBOID;
-    //glGenBuffers(1, &NormalVBOID);
-    //glBindBuffer(GL_ARRAY_BUFFER, NormalVBOID);
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(double) * normals.size(), &normals[0], GL_STATIC_DRAW);
+    GLuint NormalVBOID;
+    glGenBuffers(1, &NormalVBOID);
+    glBindBuffer(GL_ARRAY_BUFFER, NormalVBOID);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(normals[0]) * normals.size(), &normals[0], GL_STATIC_DRAW);
 
     do{
 
@@ -243,6 +244,9 @@ int main( void )
             glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
             glm::mat4 NorMat = glm::inverse(glm::transpose(MV));
             glm::vec3 Light = glm::vec3(1.0, 0.5, -1.0);
+
+            //for (int i = 0; i < 16; 
+            //std::cout << "NORMAT: " << glm::inverse(glm::transpose(MV)) << std::endl;
 
             // Send our transformation to the currently bound shader, 
             // in the "MVP" uniform
@@ -274,9 +278,9 @@ int main( void )
                 (void*)0           // element array buffer offset
             );
 
-            //glEnableVertexAttribArray(2);
-            //glBindBuffer(GL_ARRAY_BUFFER, NormalVBOID);
-            //glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+            glEnableVertexAttribArray(2);
+            glBindBuffer(GL_ARRAY_BUFFER, NormalVBOID);
+            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
             //glDisableVertexAttribArray(1);
 

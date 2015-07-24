@@ -210,7 +210,6 @@ int main( void )
     GLuint MVP_ID    = glGetUniformLocation(programID, "MVP");
     GLuint MV_ID     = glGetUniformLocation(programID, "MV");
     GLuint NORMAT_ID = glGetUniformLocation(programID, "normalMatrix");
-    GLuint LIGHT_ID  = glGetUniformLocation(programID, "vLightPosition");
     
     GLuint vertexbuffer;
     glGenBuffers(1, &vertexbuffer);
@@ -244,7 +243,7 @@ int main( void )
             glm::mat4 MV  = ViewMatrix * ModelMatrix;
             glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
             glm::mat4 NorMat = glm::inverse(glm::transpose(MV));
-            glm::vec3 Light = glm::vec3(1.0, 0.5, -1.0);
+            //glm::vec3 Light = glm::vec3(1.0, 0.5, -1.0);
 
             //for (int i = 0; i < 16; 
             //std::cout << "NORMAT: " << glm::inverse(glm::transpose(MV)) << std::endl;
@@ -254,7 +253,7 @@ int main( void )
             glUniformMatrix4fv(MVP_ID,    1, GL_FALSE, &MVP[0][0]);
             glUniformMatrix4fv(MV_ID,     1, GL_FALSE, &MV[0][0]);
             glUniformMatrix4fv(NORMAT_ID, 1, GL_FALSE, &NorMat[0][0]);
-            glUniform3fv(LIGHT_ID, 1, &Light[0]);
+            //glUniform3fv(LIGHT_ID, 1, &Light[0]);
 
             // 1rst attribute buffer : vertices
             glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);

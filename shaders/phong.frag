@@ -9,9 +9,9 @@ out vec4 vFragColor;
 smooth in vec3 vVaryingNormal;
 smooth in vec3 vVaryingLightDir;
 
-const vec4 ambientColor = vec4(.3, .2, .1, 0);
-const vec4 diffuseColor  = vec4(.3, .9, .6, 0);
-const vec4 specularColor = vec4(.6, .3, .9, 0);
+const vec4 ambientColor  = 2.0 * vec4(.3, .2, .1, 0);
+const vec4 diffuseColor  = 0.3 * vec4(.5, .9, .7, 0);
+const vec4 specularColor = 0.02 * vec4(.6, .3, .9, 0);
 
 void main(void) {
  float diff = max(0.0, dot(normalize(vVaryingNormal), normalize(vVaryingLightDir)));
@@ -20,6 +20,6 @@ void main(void) {
  vec3 vReflection = normalize(reflect(-normalize(vVaryingLightDir),normalize(vVaryingNormal)));
  float spec = max(0.0, dot(normalize(vVaryingNormal), vReflection));
 
- float fSpec = pow(spec, 32.0);
+ float fSpec = pow(spec, 128.0);
  vFragColor.rgb += vec3(fSpec, fSpec, fSpec);
 }

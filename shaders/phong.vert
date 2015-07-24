@@ -7,9 +7,11 @@ layout(location = 2) in vec3 vNormal;
 uniform mat4 MVP;  // mvp = ModelViewProjection
 uniform mat4 MV; // mv = ModelView
 uniform mat4 normalMatrix;
-uniform vec3 vLightPosition;
+//uniform vec3 vLightPosition;
 smooth out vec3 vVaryingNormal;
 smooth out vec3 vVaryingLightDir;
+
+const vec3 vLightPosition = vec3(3.0, 3.0, -1.0);
 
 void main(void) {
  vec4 vVertex4 = vec4(vVertex3, 1);

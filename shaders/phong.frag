@@ -16,9 +16,6 @@ void main(void) {
  vec3 vReflection = normalize(reflect(-normalize(vVaryingLightDir),normalize(vVaryingNormal)));
  float spec = max(0.0, dot(normalize(vVaryingNormal), vReflection));
 
- if(diff != 0) {
-   float fSpec = pow(spec, 32.0);
-   vFragColor.rgb += vec3(fSpec, fSpec, fSpec);
- }
-
+ float fSpec = pow(spec, 32.0);
+ vFragColor.rgb += vec3(fSpec, fSpec, fSpec);
 }
